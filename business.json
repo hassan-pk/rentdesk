@@ -1,0 +1,483 @@
+{
+  "id": "rentdesk",
+  "name": "RentDesk",
+  "tagline": "Know what is out and when it is due.",
+  "category": "Rental",
+  "color": "#6D28D9",
+  "description": "Offline asset availability, date reservations, rental charges and return records for equipment, tools and dresses.",
+  "entities": [
+    {
+      "key": "customers",
+      "label": "Customers",
+      "singular": "Customer",
+      "description": "Contacts and notes for repeat business.",
+      "primary": "name",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Full name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "phone",
+          "label": "Phone",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "address",
+          "label": "Address",
+          "type": "textarea"
+        },
+        {
+          "key": "notes",
+          "label": "Notes",
+          "type": "textarea"
+        }
+      ],
+      "columns": [
+        "name",
+        "phone",
+        "address"
+      ]
+    },
+    {
+      "key": "assets",
+      "label": "Rental assets",
+      "singular": "Rental asset",
+      "description": "Set the available quantity and standard daily rate.",
+      "primary": "name",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Asset name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "code",
+          "label": "Asset code",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "category",
+          "label": "Category",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "capacity",
+          "label": "Total rentable quantity",
+          "type": "number",
+          "required": true,
+          "min": 0,
+          "default": 1,
+          "integer": true,
+          "hint": "Set zero to block new reservations while all units are out of service. Existing bookings must still fit."
+        },
+        {
+          "key": "dailyRate",
+          "label": "Standard daily rate",
+          "type": "money",
+          "required": true,
+          "min": 0,
+          "default": 0
+        },
+        {
+          "key": "condition",
+          "label": "Current condition",
+          "type": "textarea"
+        },
+        {
+          "key": "photo",
+          "label": "Asset photo",
+          "type": "image",
+          "hint": "Optional image stored offline with this record."
+        },
+        {
+          "key": "notes",
+          "label": "Notes",
+          "type": "textarea"
+        }
+      ],
+      "columns": [
+        "name",
+        "code",
+        "category",
+        "capacity",
+        "dailyRate"
+      ],
+      "unique": [
+        [
+          "code"
+        ]
+      ]
+    },
+    {
+      "key": "bookings",
+      "label": "Rental bookings",
+      "singular": "Rental booking",
+      "description": "Reserve quantities, record rent and finish the return inspection.",
+      "primary": "title",
+      "fields": [
+        {
+          "key": "title",
+          "label": "Booking title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "customer",
+          "label": "Customer",
+          "type": "reference",
+          "required": true,
+          "reference": "customers"
+        },
+        {
+          "key": "asset",
+          "label": "Rental asset",
+          "type": "reference",
+          "required": true,
+          "reference": "assets"
+        },
+        {
+          "key": "start",
+          "label": "Pickup date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "key": "end",
+          "label": "Due return date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "key": "quantity",
+          "label": "Quantity booked",
+          "type": "number",
+          "required": true,
+          "min": 1,
+          "default": 1,
+          "integer": true
+        },
+        {
+          "key": "billableDays",
+          "label": "Agreed billable days",
+          "type": "number",
+          "required": true,
+          "min": 1,
+          "default": 1,
+          "hint": "Agreed days are entered manually; dates do not calculate the price.",
+          "integer": true
+        },
+        {
+          "key": "rate",
+          "label": "Agreed daily rate per unit",
+          "type": "money",
+          "required": true,
+          "min": 0,
+          "default": 0
+        },
+        {
+          "key": "dailySubtotal",
+          "label": "Daily subtotal",
+          "type": "money",
+          "min": 0,
+          "default": 0
+        },
+        {
+          "key": "rentalCharge",
+          "label": "Rental charge",
+          "type": "money",
+          "min": 0,
+          "default": 0
+        },
+        {
+          "key": "damageCharge",
+          "label": "Damage / late fee",
+          "type": "money",
+          "min": 0,
+          "default": 0
+        },
+        {
+          "key": "amount",
+          "label": "Rental and fees total",
+          "type": "money",
+          "required": true,
+          "min": 0,
+          "default": 0
+        },
+        {
+          "key": "paid",
+          "label": "Rental amount collected",
+          "type": "money",
+          "required": true,
+          "min": 0,
+          "default": 0
+        },
+        {
+          "key": "paymentMethod",
+          "label": "Initial payment method",
+          "type": "select",
+          "required": true,
+          "options": [
+            "cash",
+            "card",
+            "bank"
+          ],
+          "default": "cash",
+          "hint": "Applies to the amount entered when creating this record. Later payments choose their own method."
+        },
+        {
+          "key": "depositHeld",
+          "label": "Security deposit held (separate)",
+          "type": "money",
+          "min": 0,
+          "default": 0,
+          "hint": "Informational custody record only; excluded from rent collections and outstanding balance."
+        },
+        {
+          "key": "depositReturned",
+          "label": "Deposit returned",
+          "type": "checkbox",
+          "default": false
+        },
+        {
+          "key": "outCondition",
+          "label": "Condition on issue",
+          "type": "textarea"
+        },
+        {
+          "key": "returnCondition",
+          "label": "Return inspection / damage notes",
+          "type": "textarea"
+        },
+        {
+          "key": "actualReturn",
+          "label": "Actual return date",
+          "type": "date"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Reserved",
+            "Issued",
+            "Returned",
+            "Cancelled"
+          ],
+          "default": "Reserved"
+        }
+      ],
+      "columns": [
+        "title",
+        "customer",
+        "asset",
+        "start",
+        "end",
+        "status"
+      ],
+      "workflow": {
+        "field": "status",
+        "initial": "Reserved",
+        "states": [
+          "Reserved",
+          "Issued",
+          "Returned",
+          "Cancelled"
+        ],
+        "terminal": [
+          "Returned",
+          "Cancelled"
+        ]
+      },
+      "finance": {
+        "total": "amount",
+        "paid": "paid"
+      },
+      "calculations": [
+        {
+          "target": "dailySubtotal",
+          "op": "multiply",
+          "fields": [
+            "quantity",
+            "rate"
+          ]
+        },
+        {
+          "target": "rentalCharge",
+          "op": "multiply",
+          "fields": [
+            "dailySubtotal",
+            "billableDays"
+          ]
+        },
+        {
+          "target": "amount",
+          "op": "sum",
+          "fields": [
+            "rentalCharge",
+            "damageCharge"
+          ]
+        }
+      ],
+      "booking": {
+        "resource": "asset",
+        "start": "start",
+        "end": "end",
+        "quantity": "quantity",
+        "capacity": "capacity",
+        "inactive": [
+          "Returned",
+          "Cancelled"
+        ]
+      },
+      "dateOrder": [
+        [
+          "start",
+          "end"
+        ],
+        [
+          "start",
+          "actualReturn"
+        ]
+      ]
+    },
+    {
+      "key": "maintenance",
+      "label": "Maintenance",
+      "singular": "Maintenance record",
+      "description": "Record asset servicing separately from customer rental collections.",
+      "primary": "title",
+      "fields": [
+        {
+          "key": "title",
+          "label": "Maintenance summary",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "asset",
+          "label": "Rental asset",
+          "type": "reference",
+          "required": true,
+          "reference": "assets"
+        },
+        {
+          "key": "date",
+          "label": "Service date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "key": "condition",
+          "label": "Condition after service",
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "key": "cost",
+          "label": "Service cost",
+          "type": "money",
+          "min": 0,
+          "default": 0
+        },
+        {
+          "key": "provider",
+          "label": "Service provider",
+          "type": "text"
+        },
+        {
+          "key": "notes",
+          "label": "Notes",
+          "type": "textarea"
+        }
+      ],
+      "columns": [
+        "title",
+        "asset",
+        "date",
+        "cost",
+        "provider"
+      ]
+    },
+    {
+      "key": "expenses",
+      "label": "Expenses",
+      "singular": "Expense",
+      "description": "Record operating costs separately from customer bills.",
+      "primary": "title",
+      "fields": [
+        {
+          "key": "title",
+          "label": "Expense description",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "date",
+          "label": "Expense date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "key": "category",
+          "label": "Category",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Supplies",
+            "Utilities",
+            "Rent",
+            "Wages",
+            "Other"
+          ]
+        },
+        {
+          "key": "amount",
+          "label": "Amount",
+          "type": "money",
+          "required": true,
+          "min": 0,
+          "default": 0
+        },
+        {
+          "key": "method",
+          "label": "Payment method",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Cash",
+            "Card",
+            "Bank"
+          ],
+          "default": "Cash"
+        },
+        {
+          "key": "note",
+          "label": "Notes",
+          "type": "textarea"
+        }
+      ],
+      "columns": [
+        "title",
+        "date",
+        "category",
+        "amount",
+        "method"
+      ]
+    }
+  ],
+  "limitations": [
+    "Capacity checks use inclusive pickup/return dates; Returned and Cancelled no longer reserve capacity. No hourly rentals or serial-number assignment.",
+    "Billable days and agreed rate are manual. Record late/damage fees and actual return date yourself; penalties are not calculated automatically.",
+    "Security deposits are informational custody fields, not rent income, payment-ledger entries, refunds or automated liability accounting. Reconcile deposits separately.",
+    "Maintenance does not automatically block bookings. Adjust asset capacity and review existing reservations when taking units out of service.",
+    "Returned records are terminal: enter final charges, inspection and deposit state before returning. One owner and one computer."
+  ]
+}
